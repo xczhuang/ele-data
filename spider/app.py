@@ -1,16 +1,21 @@
 #coding:utf-8
 import MySQLdb
+import json
 
 
 class  ViewData(object):
-    time=input("请输入查询时间：")
-    area=raw_input("请输入查询地区：")
+   # time=raw_input("请输入查询时间：")
+   # area=raw_input("请输入查询地区：")
     def __init__(self):
-        self.tim="2001年1月"
-        self.are="安徽省"
-        self.select_data(self.tim,self.are)
+        time=raw_input("请输入查询时间：")
+        area=raw_input("请输入查询地区：")
 
-    def select_data(self,tim,are):
+        self.times=time
+        self.areas=area
+        self.select_data(self.times,self.areas)
+
+    def select_data(self,times,areas):
+        print  times ,areas
         conn=MySQLdb.connect(host='localhost',
                 port=3306,
                 user='root',
@@ -19,19 +24,17 @@ class  ViewData(object):
                 charset='utf8'
                 )
         cur=conn.cursor()
-        #for i in xrange(1,13):
-        times="2011年3月"
-        areas="安徽省"
-        sql1="select * from ele_data where area=\"安徽省\" AND time=\"2001年3月\""
-        print sql1
-        sql2="select * from ele_data where area="+"'"+areas+"'"+ "AND time="+"'"+times+"'"
-        print sql2
-        sql="select * from ele_data "
-        cur.execute(sql2)
-        month_datas=cur.fetchall()
-        for month_data in month_datas:
-            print month_data
-
+        dict={}
+        for i in xrange(2,13):
+            timet="'"+times+"年"+str(i)+"月"+"'"
+            print timet
+            sql2="select value from ele_data where area="+"'"+areas+"'"+ "AND time="+"'"+times+"年"+str(i)+"月"+"'"
+            print sql2
+            cur.execute(sql2)
+            month_data=cur.fetchall()
+            dict[timet]=month_data
+            print dict[timet]
+            json.dump(dict,open('json.txt','w'))
         cur.close()
         conn.commit()
         conn.close()
